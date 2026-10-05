@@ -127,7 +127,7 @@
           gRoute.classList.remove('route-enter');
           void gRoute.getBoundingClientRect();
           gRoute.classList.add('route-enter');
-          line.style.setProperty('--dash', 24 * u);
+          line.style.setProperty('--dash', (24 * u) + 'px');
         }
       }
     }

@@ -1,5 +1,9 @@
 /*
- * Smart Escape — UI strings.
+ * Smart Escape — Bangla / English UI strings.
+ *
+ * Every visible string, including validation messages, has an English and a
+ * Bangla version. In Bangla mode numbers are shown with Bangla digits; node ids
+ * (R1, C1, …) stay as written in the JSON so routes remain comparable.
  */
 (function (root) {
   'use strict';
@@ -65,14 +69,110 @@
       'import.keepPrevious': 'The previously loaded building is still shown.',
       'aria.node': '{type} {id}, {name}{state}',
       'aria.edge': 'Corridor {a} to {b}, cost {w}{state}',
-      'footer': 'Runs entirely in your browser. No data leaves this page.'
+      'footer': 'Runs entirely in your browser. No data leaves this page.',
+      'lang.label': 'Language'
+    },
+
+    bn: {
+      'app.title': 'স্মার্ট এস্কেপ',
+      'app.tagline': 'জরুরি নির্গমন পথ নির্ণায়ক',
+      'btn.import': 'JSON ইমপোর্ট',
+      'btn.sample': 'নমুনা লোড',
+      'btn.reset': 'রিসেট',
+      'drop.hint': 'বিল্ডিং JSON ফাইলটি এখানে ছেড়ে দিন',
+      'empty.title': 'কোনো বিল্ডিং লোড হয়নি',
+      'empty.body': 'মানচিত্র ও সবচেয়ে নিরাপদ পথ দেখতে একটি বিল্ডিং JSON ফাইল ইমপোর্ট করুন (অথবা নমুনা লোড করুন)।',
+      'route.heading': 'নির্গমন পথ',
+      'route.ok': '{exit} দিয়ে বের হোন',
+      'route.cost': 'মোট খরচ',
+      'route.steps': 'ধাপসমূহ',
+      'route.noStart': 'পথ হিসাব করতে একটি শুরুর অবস্থান বেছে নিন।',
+      'route.invalidStart': 'শুরুর অবস্থানটি কোনো কক্ষ বা সংযোগস্থল নয়।',
+      'route.startBlocked': 'শুরুর অবস্থান অবরুদ্ধ',
+      'route.startBlockedHelp': 'আপনার বর্তমান অবস্থানটি অবরুদ্ধ। অন্য শুরুর অবস্থান বেছে নিন অথবা এটি মুক্ত করুন।',
+      'route.noRoute': 'কোনো পথ পাওয়া যায়নি',
+      'route.noRouteHelp': 'এখান থেকে কোনো খোলা বহির্গমনে পৌঁছানো যাচ্ছে না। কোনো অবস্থান বা করিডোর মুক্ত করুন, অথবা একটি বহির্গমন আবার খুলুন।',
+      'route.none': 'পথ হিসাব করতে একটি বিল্ডিং ইমপোর্ট করুন।',
+      'start.heading': 'শুরুর অবস্থান',
+      'start.placeholder': 'একটি কক্ষ বা সংযোগস্থল বেছে নিন…',
+      'start.blockedOption': '{name} (অবরুদ্ধ)',
+      'sel.heading': 'নির্বাচিত',
+      'sel.hint': 'কোনো অবস্থান অবরুদ্ধ করতে, বহির্গমন বন্ধ করতে বা শুরুর অবস্থান ঠিক করতে মানচিত্রে অবস্থান বা করিডোরে ক্লিক করুন।',
+      'sel.setStart': 'শুরু হিসেবে নির্ধারণ',
+      'sel.block': 'অবস্থান অবরুদ্ধ করুন',
+      'sel.unblock': 'অবস্থান মুক্ত করুন',
+      'sel.blockEdge': 'করিডোর অবরুদ্ধ করুন',
+      'sel.unblockEdge': 'করিডোর মুক্ত করুন',
+      'sel.closeExit': 'বহির্গমন বন্ধ করুন',
+      'sel.reopenExit': 'বহির্গমন খুলুন',
+      'sel.corridor': 'করিডোর {a} – {b}',
+      'sel.weight': 'খরচ {w}',
+      'haz.heading': 'বিপদসমূহ',
+      'haz.none': 'কোনো বিপদ নেই। সব অবস্থান, করিডোর ও বহির্গমন খোলা।',
+      'haz.blockedNode': 'অবরুদ্ধ: {name}',
+      'haz.blockedEdge': 'অবরুদ্ধ করিডোর: {a} – {b}',
+      'haz.closedExit': 'বন্ধ বহির্গমন: {name}',
+      'haz.clear': 'সরান',
+      'exits.heading': 'বহির্গমনসমূহ',
+      'state.open': 'খোলা',
+      'state.closed': 'বন্ধ',
+      'state.blocked': 'অবরুদ্ধ',
+      'type.room': 'কক্ষ',
+      'type.junction': 'সংযোগস্থল',
+      'type.exit': 'বহির্গমন',
+      'legend.heading': 'নির্দেশিকা',
+      'legend.route': 'নির্গমন পথ',
+      'legend.start': 'আপনার অবস্থান',
+      'legend.blocked': 'অবরুদ্ধ',
+      'legend.closed': 'বন্ধ বহির্গমন',
+      'import.loaded': '“{name}” লোড হয়েছে: {nodes}টি অবস্থান, {edges}টি করিডোর।',
+      'import.failed': '“{name}” ইমপোর্ট করা যায়নি। নিচের সমস্যাগুলো ঠিক করে আবার চেষ্টা করুন:',
+      'import.warnings': 'সতর্কতা',
+      'import.fetchFailed': 'সার্ভার থেকে building.json লোড করা যায়নি। ফাইলটি বেছে নিতে “JSON ইমপোর্ট” ব্যবহার করুন।',
+      'import.keepPrevious': 'আগে লোড করা বিল্ডিংটি এখনও দেখানো হচ্ছে।',
+      'aria.node': '{type} {id}, {name}{state}',
+      'aria.edge': 'করিডোর {a} থেকে {b}, খরচ {w}{state}',
+      'footer': 'সম্পূর্ণভাবে আপনার ব্রাউজারে চলে। কোনো তথ্য এই পেজের বাইরে যায় না।',
+      'lang.label': 'ভাষা',
+
+      'err.INVALID_JSON': 'ফাইলটি বৈধ JSON নয় ({detail})।',
+      'err.NOT_OBJECT': 'ফাইলের শীর্ষ স্তর অবশ্যই একটি JSON অবজেক্ট হতে হবে।',
+      'err.NO_NODES': 'কোনো "nodes" তালিকা পাওয়া যায়নি।',
+      'err.NO_EDGES': 'কোনো "edges" তালিকা পাওয়া যায়নি।',
+      'err.NODE_NOT_OBJECT': '{index} নম্বর নোডটি অবজেক্ট নয়।',
+      'err.NODE_NO_ID': '{index} নম্বর নোডের কোনো "id" নেই।',
+      'err.NODE_DUPLICATE_ID': 'নোড id "{id}" একাধিকবার ব্যবহার হয়েছে।',
+      'err.NODE_BAD_TYPE': 'নোড "{id}"-এর ধরন "{type}" অজানা (room, junction বা exit ব্যবহার করুন)।',
+      'err.NODE_BAD_COORD': 'নোড "{id}"-এর সংখ্যাসূচক "x" ও "y" স্থানাঙ্ক প্রয়োজন।',
+      'err.EDGE_NOT_OBJECT': '{index} নম্বর করিডোরটি অবজেক্ট নয়।',
+      'err.EDGE_MISSING_END': '{index} নম্বর করিডোরের দুই প্রান্তই ("from" ও "to") প্রয়োজন।',
+      'err.EDGE_UNKNOWN_NODE': '{index} নম্বর করিডোর অজানা নোড "{id}" উল্লেখ করেছে।',
+      'err.EDGE_SELF_LOOP': '{index} নম্বর করিডোর "{id}"-কে নিজের সাথেই যুক্ত করেছে।',
+      'err.EDGE_BAD_WEIGHT': '{index} নম্বর করিডোরের ({a}–{b}) একটি সসীম, অঋণাত্মক "weight" প্রয়োজন।',
+      'err.EDGE_DUPLICATE': '"{a}" ও "{b}"-এর মধ্যে একাধিক করিডোর রয়েছে।',
+      'err.EDGE_DUPLICATE_ID': 'করিডোর id "{id}" একাধিকবার ব্যবহার হয়েছে।',
+      'err.EXIT_UNKNOWN': '"exits" তালিকায় অজানা নোড "{id}" রয়েছে।',
+      'err.NO_EXIT': 'বিল্ডিংয়ে কোনো বহির্গমন নেই।',
+      'err.NO_START_CANDIDATE': 'শুরু করার মতো কোনো কক্ষ বা সংযোগস্থল নেই।',
+      'err.STATE_UNKNOWN_START': 'initial_state.start "{id}" কোনো নোড নয়।',
+      'err.STATE_START_IS_EXIT': 'initial_state.start "{id}" অবশ্যই কক্ষ বা সংযোগস্থল হতে হবে, বহির্গমন নয়।',
+      'err.STATE_UNKNOWN_NODE': 'initial_state অজানা নোড "{id}" অবরুদ্ধ করেছে।',
+      'err.STATE_UNKNOWN_EDGE': 'initial_state অজানা করিডোর "{id}" অবরুদ্ধ করেছে।',
+      'err.STATE_UNKNOWN_EXIT': 'initial_state "{id}" বন্ধ করেছে, যা কোনো বহির্গমন নয়।',
+      'err.STATE_NOT_LIST': 'initial_state.{field} অবশ্যই একটি তালিকা হতে হবে।',
+      'err.WARN_EXIT_AS_BLOCKED': 'বহির্গমন "{id}" blocked_nodes-এ ছিল; এটিকে বন্ধ বহির্গমন হিসেবে ধরা হয়েছে।',
+      'err.WARN_ISOLATED_NODE': 'নোড "{id}" কোনো করিডোরের সাথে যুক্ত নয়।',
+      'err.WARN_NO_INITIAL_STATE': 'কোনো initial_state পাওয়া যায়নি; কিছু অবরুদ্ধ না রেখে শুরু করা হচ্ছে।'
     }
   };
 
   let lang = 'en';
 
+  const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
+
+  // Bangla mode shows numbers (costs, counts) with Bangla digits.
   function digits(s) {
-    return s;
+    return lang === 'bn' ? s.replace(/[0-9]/g, (d) => BN_DIGITS[d]) : s;
   }
 
   function formatNumber(n) {
@@ -104,13 +204,24 @@
     });
   }
 
+  function savedLang() {
+    try {
+      const v = localStorage.getItem('smart-escape-lang');
+      return v && STRINGS[v] ? v : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   SE.i18n = {
+    savedLang,
     t, issueText, formatNumber, applyStatic,
     getLang: () => lang,
     setLang(l) {
       if (!STRINGS[l]) return;
       lang = l;
       document.documentElement.lang = l;
+      try { localStorage.setItem('smart-escape-lang', l); } catch (e) { /* storage unavailable */ }
       applyStatic();
     },
     languages: () => Object.keys(STRINGS)

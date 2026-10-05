@@ -16,7 +16,8 @@
     message: $('import-message'), buildingName: $('building-name'),
     mapPanel: $('map-panel'), map: $('map'), empty: $('map-empty'), dropHint: $('drop-hint'),
     routeCard: $('route-card'), routeBody: $('route-body'), start: $('start-select'),
-    inspector: $('inspector'), exits: $('exit-list'), hazards: $('hazard-list')
+    inspector: $('inspector'), exits: $('exit-list'), hazards: $('hazard-list'),
+    langToggle: $('lang-toggle'), mapAlert: $('map-alert')
   };
 
   const state = {
@@ -29,6 +30,7 @@
     closedExits: new Set(),
     selected: null, // { kind: 'node' | 'edge', id }
     route: null,
+    routeSig: null,
     lastImport: null // { ok, name, errors, warnings, fetchFailed }
   };
 
@@ -143,9 +145,11 @@
   // ---- rendering ----------------------------------------------------------
 
   function render() {
+    renderLang();
     renderMessage();
     renderTitle();
     renderRoute();
+    renderMapAlert();
     if (!state.building) return;
     renderStartSelect();
     renderInspector();
@@ -169,6 +173,32 @@
       },
       edgeAria: (e) => t('aria.edge', { a: e.a, b: e.b, w: e.weight, state: state.blockedEdges.has(e.key) ? ', ' + t('state.blocked') : '' })
     });
+  }
+
+  function renderLang() {
+    els.langToggle.setAttribute('aria-label', t('lang.label'));
+    els.langToggle.querySelectorAll('[data-lang]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.lang === I.getLang()));
+    });
+  }
+
+  // The two required failure states are also shown prominently over the map.
+  function renderMapAlert() {
+    const r = state.route;
+    const key = r && r.status === 'START_BLOCKED' ? 'route.startBlocked'
+      : r && r.status === 'NO_ROUTE' ? 'route.noRoute' : null;
+    if (!key) {
+      els.mapAlert.hidden = true;
+      els.mapAlert.dataset.key = '';
+      return;
+    }
+    if (els.mapAlert.dataset.key !== key + I.getLang()) {
+      els.mapAlert.dataset.key = key + I.getLang();
+      clear(els.mapAlert);
+      els.mapAlert.appendChild(h('span', { class: 'alert-icon', 'aria-hidden': 'true', text: '!' }));
+      els.mapAlert.appendChild(h('span', { text: t(key) }));
+    }
+    els.mapAlert.hidden = false;
   }
 
   function renderTitle() {
@@ -210,6 +240,14 @@
     clear(body);
     const r = state.route;
     els.routeCard.dataset.status = r ? r.status : 'NONE';
+    // Replay the fade-in only when the route itself changes.
+    const sig = r ? r.status + ':' + (r.path || []).join('>') : '';
+    if (sig !== state.routeSig) {
+      state.routeSig = sig;
+      body.classList.remove('fresh');
+      void body.offsetWidth;
+      body.classList.add('fresh');
+    }
     if (!r) { body.appendChild(h('p', { class: 'muted', text: t('route.none') })); return; }
 
     if (r.status === 'OK') {
@@ -233,7 +271,8 @@
       START_BLOCKED: ['route.startBlocked', 'route.startBlockedHelp'],
       NO_ROUTE: ['route.noRoute', 'route.noRouteHelp']
     }[r.status];
-    body.appendChild(h('p', { class: 'route-alert', text: t(msg[0]) }));
+    const isFailure = r.status === 'START_BLOCKED' || r.status === 'NO_ROUTE';
+    body.appendChild(h('p', { class: isFailure ? 'route-alert' : 'route-info', text: t(msg[0]) }));
     if (msg[1]) body.appendChild(h('p', { class: 'muted', text: t(msg[1]) }));
   }
 
@@ -363,6 +402,13 @@
     if (f) f.text().then((text) => loadText(text, f.name));
   });
 
-  I.applyStatic();
+  els.langToggle.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('[data-lang]');
+    if (!btn || btn.dataset.lang === I.getLang()) return;
+    I.setLang(btn.dataset.lang);
+    render();
+  });
+
+  I.setLang(I.savedLang() || 'en');
   render();
 })();

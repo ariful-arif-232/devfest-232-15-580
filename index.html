@@ -17,6 +17,10 @@
       </div>
     </div>
     <div class="actions">
+      <div class="lang-toggle" role="group" aria-label="Language" id="lang-toggle">
+        <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" class="lang-btn" data-lang="bn" aria-pressed="false" lang="bn">বাংলা</button>
+      </div>
       <label class="btn">
         <input type="file" id="file-input" accept=".json,application/json" hidden>
         <span data-i18n="btn.import">Import JSON</span>
@@ -34,6 +38,7 @@
         <h2 data-i18n="empty.title">No building loaded</h2>
         <p data-i18n="empty.body">Import a building JSON file (or load the sample) to see the map and the safest route.</p>
       </div>
+      <div class="map-alert" id="map-alert" role="alert" hidden></div>
       <svg id="map" class="map" role="group" aria-label="Building map" hidden></svg>
       <div class="drop-hint" id="drop-hint" data-i18n="drop.hint" hidden>Drop a building JSON file here</div>
     </section>
