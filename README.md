@@ -1,107 +1,146 @@
-# Smart Escape
+# Smart Escape: Interactive Evacuation Route Simulator
 
-A frontend-only emergency evacuation route finder. Import a building as JSON. The app draws it as an SVG map and finds the lowest-cost route from your location to an open exit. It recalculates the route as soon as you block a location or corridor, or close an exit.
+Built for the AI DevFest mock test.
 
-There's no backend, database or serverless function. Everything runs in the browser as plain HTML, CSS and JavaScript with no build step or dependencies.
+| | |
+|---|---|
+| **Name** | Ariful Islam Arif |
+| **Registration number** | 232-15-580 |
+| **Live site** | **https://devfest-232-15-580.vercel.app** |
+| **Repository** | https://github.com/ariful-arif-232/devfest-232-15-580 |
+
+Smart Escape is a frontend-only web app. Import a building as JSON and the app draws it as an SVG map. It then finds the lowest-cost route from your chosen starting location to an open exit. It recalculates the route as soon as you block a location or corridor, or close an exit.
+
+Smart Escape is an educational simulation, not a certified real-world evacuation planning tool.
+
+## Screenshots
+
+These use the official `building.json`.
+
+| Baseline: select R1 | After blocking C2 |
+|---|---|
+| ![Baseline route R1 → C1 → C2 → E1, cost 7](screenshots/baseline-R1-C1-C2-E1-cost-7.png) | ![Rerouted R1 → C1 → C3 → C4 → E2, cost 11](screenshots/reroute-C2-blocked-R1-C1-C3-C4-E2-cost-11.png) |
+| R1 → C1 → C2 → E1, cost 7 | R1 → C1 → C3 → C4 → E2, cost 11 |
 
 ## Running it
 
-Serve the folder with any static file server, then open it in a browser:
+Open the **live site** above in the latest Chrome. No login or installation is needed.
+
+To run it locally, serve the folder with any static file server:
 
 ```sh
 python3 -m http.server 8080   # or: npm start
-# open http://localhost:8080
+# then open http://localhost:8080
 ```
 
-Click **Load sample** to load the bundled `building.json`, or use **Import JSON** (or drag a file onto the map) to load your own. If you open `index.html` directly from disk, **Import JSON** still works. **Load sample** needs a server, because browsers block `fetch` on `file://` pages.
+1. Click **Import JSON** to choose a building file, or drag one onto the map. **Load sample** loads the bundled official `building.json`.
+2. Choose a starting room or junction from the **Starting location** list, or click it on the map and choose **Set as start**.
+3. Click any location, corridor or exit to block, unblock, close or reopen it. The route updates immediately.
+4. **Reset** restores the file's `initial_state`. Your chosen start is kept.
+5. Use **EN / বাংলা** to switch language.
 
-## Features
+If you open `index.html` directly from disk, **Import JSON** still works. **Load sample** needs a server, because browsers block `fetch` on `file://` pages.
 
-- **JSON import and validation.** Load a file with the picker or by drag and drop. Each problem in a file is reported with a clear message in English or Bangla. If an import fails, the previously loaded building stays on screen.
-- **SVG map.** Every location is drawn at its supplied `x`/`y` coordinates, and the map scales to fit any coordinate range. Rooms, junctions and exits each have their own shape, and each corridor shows its cost.
-- **Undirected weighted graph** with **deterministic Dijkstra** routing (see below).
-- **Start selection.** Pick your starting room or junction from the drop-down list or by clicking the map. Only unblocked rooms and junctions can be chosen.
-- **Hazard controls.** Block or unblock locations and corridors, and close or reopen exits, from the map, the exits list or the hazards list.
-- **Automatic rerouting** on every change.
-- **Reset** restores the file's `initial_state`.
-- **Failure states.** The app shows **"No route available"** when no open exit can be reached, and **"Starting location blocked"** when your own location is blocked. Both appear on the map and in the route panel.
-- **Bangla / English** for every visible string, including validation messages. Numbers use Bangla digits in Bangla mode, and the language choice is remembered.
-- **Subtle animations.** The route line draws in and flows, your location pulses gently, hazard markers pop in, and alerts slide in. All animation is turned off when the system's reduced-motion setting is on.
-- Works with the keyboard (Tab to a location or corridor, Enter to select it), in light and dark themes, and on phone-width screens.
+There's no backend, serverless function, database or external API. Everything is plain HTML, CSS and JavaScript with no build step and no dependencies.
+
+### Tests
+
+```sh
+npm test   # node --test, no dependencies
+```
+
+The tests cover:
+
+- all five official sample checks
+- the exact tie-break order
+- blocked corridors, closed exits and disconnected graphs
+- every validation rule
+
+## Implemented features (mandatory)
+
+- **Import and validation.** The importer follows the official schema strictly. Any malformed or inconsistent file is rejected with a clear message for each problem, in English or Bangla. If an import fails, the previous building stays on screen. The importer works for any file with the same schema; nothing is hard-coded.
+- **Map.** Every node is drawn at its supplied `x`/`y`, with readable labels. Rooms, junctions and exits each have their own shape, and every corridor shows its cost. The map scales to fit any coordinate range.
+- **Select and calculate.** You can choose any unblocked room or junction as the start. The app highlights the lowest-cost route and lists its node sequence, exit and total cost.
+- **Change conditions.** You can block or unblock rooms and junctions, block or unblock corridors, and close or reopen exits. Each state looks different on the map and is also listed in the side panel.
+- **Update and reset.** The route is recalculated immediately after every start or hazard change, without reimporting. Reset restores the file's original `initial_state`.
+- **Failure cases.** **No route available** and **Starting location blocked** appear on the map and in the route panel.
+- **Two languages.** Every label, button, status, error and instruction is available in Bangla and English. Bangla mode also uses Bangla digits. Labels from the dataset stay as written in the file.
+- **Subtle animations.** Short animations play when you select a location, toggle a hazard or change the route. The route line draws in and flows, and alerts slide in. Nothing flashes or delays the controls, and all animation is turned off when the system's reduced-motion setting is on.
 
 ## Routing rules
 
-- Corridors are undirected and have non-negative weights. A route's cost is the sum of its corridor weights.
-- A route can't pass through a blocked location, a blocked corridor or a closed exit.
-- Reaching any exit ends the route, so a route never passes through one exit to reach another.
-- **Tie-breaking (deterministic):** if two routes cost the same, the app chooses the one whose sequence of node IDs comes first in plain string order, compared one ID at a time. The same input therefore always gives the same route, whatever order the nodes and edges appear in the file.
-- Routes are always computed from the imported data. No sample route is hard-coded.
+Routing uses deterministic Dijkstra on an undirected weighted graph (`src/graph.js`):
 
-With the bundled sample:
+- A route's cost is the sum of its edge `cost` values. Coordinates and the number of corridors are never used.
+- Blocked nodes are excluded, along with every corridor attached to them. Blocked corridors and closed exits are excluded too, including as intermediate nodes. A blocked corridor removes only that connection.
+- The route goes to the reachable open exit with the **minimum cost**. If two exits cost the same, the **lexicographically smallest exit ID** wins. If two paths to that exit also tie, the **lexicographically smallest node-ID sequence** wins. IDs are compared case-sensitively in plain string order.
 
-| Situation | Route | Cost |
+### Official sample checks
+
+All five pass, both in the automated tests and in the live UI.
+
+| Scenario | Action | Result |
 |---|---|---|
-| Initial state | R1 → C1 → C2 → E1 | 7 |
-| After blocking C2 | R1 → C1 → C3 → C4 → E2 | 11 |
+| Baseline | Select R1 | R1 → C1 → C2 → E1; cost 7 |
+| Blocked junction | Select R1; block C2 | R1 → C1 → C3 → C4 → E2; cost 11 |
+| Exits closed | Select R1; close E1 and E2 | No route available |
+| Different start | Select R2 | R2 → C3 → C4 → E2; cost 7 |
+| Blocked start | Select R1; then block R1 | Starting location blocked |
 
-## Building JSON format
+## Input format
 
 ```json
 {
-  "building": { "name": "Demo Floor", "name_bn": "ডেমো ফ্লোর" },
-  "nodes": [
-    { "id": "R1", "type": "room", "label": "Room 101", "label_bn": "কক্ষ ১০১", "x": 100, "y": 120 },
-    { "id": "C1", "type": "junction", "x": 250, "y": 120 },
-    { "id": "E1", "type": "exit", "label": "North-East Exit", "x": 760, "y": 120 }
-  ],
-  "edges": [
-    { "id": "R1-C1", "from": "R1", "to": "C1", "weight": 2 },
-    { "from": "C1", "to": "E1", "weight": 5 }
-  ],
-  "initial_state": {
-    "start": "R1",
-    "blocked_nodes": [],
-    "blocked_edges": [],
-    "closed_exits": []
-  }
+  "building": "East Annex - Practice Building",
+  "nodes": [{ "id": "R1", "label": "Room 101", "type": "room", "x": 60, "y": 65 }],
+  "edges": [{ "id": "L01", "from": "R1", "to": "C1", "cost": 2 }],
+  "initial_state": { "blocked_nodes": [], "blocked_edges": [], "closed_exits": [] }
 }
 ```
 
-- `type` must be `room`, `junction` or `exit`. Common aliases are also accepted: `corridor` and `hallway` load as `junction`, and `emergency_exit` and `fire_exit` load as `exit`. A separate `exits` list of node IDs also works.
-- Edges can use `from`/`to` or `source`/`target`, and `weight`, `cost` or `distance`.
-- `blocked_edges` entries can be an edge ID, `"A-B"`, `["A","B"]` or `{ "from": "A", "to": "B" }`.
-- `label_bn` and `name_bn` are optional Bangla names. The English label is used when no Bangla name is given.
+The importer rejects a file, with a message for each problem, if any of these are true:
 
-The import is rejected, with a message for each problem, if the file has any of these:
+- `building` is not a non-empty string.
+- A node doesn't have a unique, non-empty `id`, a non-empty `label`, a `type` of exactly `room`, `junction` or `exit`, or numeric `x` and `y`.
+- An edge doesn't have a unique `id`, or its `from` or `to` isn't an existing node ID. IDs are case-sensitive.
+- An edge's `cost` is not a positive integer.
+- The file contains a self-loop, or more than one edge between the same pair of nodes.
+- There are fewer than 2 or more than 60 nodes, or fewer than 1 or more than 150 edges.
+- There isn't at least one room or junction and at least one exit.
+- `initial_state` is missing, or any of its three arrays is missing.
+- An `initial_state` ID doesn't exist or is in the wrong category. Blocked nodes must be rooms or junctions, blocked edges must be edge IDs, and closed exits must be exits.
 
-- invalid JSON
-- missing nodes or edges
-- duplicate or missing IDs
-- an unknown node type
-- non-numeric coordinates
-- an edge to an unknown node, an edge from a node to itself, or a duplicate edge
-- a negative or non-numeric weight
-- no exit, or nothing to start from
-- an `initial_state` that refers to a node or edge that doesn't exist
+Empty `initial_state` arrays and disconnected graphs are valid. Unknown extra fields are ignored.
+
+## Bonus features
+
+I didn't attempt the optional extensions: alternative routes, high-contrast mode, PNG export, saving progress and route walkthroughs. The app does have some small extras: keyboard access to the map, drag-and-drop import, a dark theme, and remembering the chosen language.
+
+## Known issues
+
+- **Load sample** only works when the folder is served over HTTP(S). **Import JSON** always works.
+- Labels can overlap on datasets whose nodes are placed very close together, because the map always uses the supplied coordinates as given.
+
+## AI tools and most useful prompt
+
+- **AI tool used:** Claude Code, used for implementation, testing and deployment. Each commit message includes the prompt used for that change.
+- **Most useful prompt:** *"Implement JSON import, validation, graph modelling and deterministic Dijkstra routing for Smart Escape."*
 
 ## Project layout
 
 ```
 index.html          page markup
 styles.css          layout, themes, map styling and animations
-building.json       sample building
-src/validate.js     JSON import and validation
+building.json       official sample building
+src/validate.js     JSON import and strict validation
 src/graph.js        graph model and deterministic Dijkstra
 src/map.js          SVG map rendering
 src/i18n.js         Bangla / English strings
 src/app.js          state, controls and rerouting
-tests/              Node test runner tests for routing and validation
+tests/              Node test runner tests
+screenshots/        baseline and rerouting screenshots
 ```
 
-## Tests
+## License
 
-```sh
-npm test   # node --test, no dependencies
-```
-
-The tests cover both sample routes, corridor and exit hazards, a blocked start, unreachable exits, deterministic tie-breaking and the validation errors.
+MIT. See [LICENSE](LICENSE).

@@ -1,37 +1,120 @@
 {
-  "building": {
-    "id": "devfest-demo-floor",
-    "name": "Smart Escape Demo Floor",
-    "name_bn": "স্মার্ট এস্কেপ ডেমো ফ্লোর"
-  },
+  "building": "East Annex - Practice Building",
   "nodes": [
-    { "id": "R1", "type": "room", "label": "Room 101", "label_bn": "কক্ষ ১০১", "x": 100, "y": 120 },
-    { "id": "R2", "type": "room", "label": "Room 102", "label_bn": "কক্ষ ১০২", "x": 380, "y": 30 },
-    { "id": "R3", "type": "room", "label": "Room 103", "label_bn": "কক্ষ ১০৩", "x": 100, "y": 330 },
-    { "id": "R4", "type": "room", "label": "Room 104", "label_bn": "কক্ষ ১০৪", "x": 500, "y": 470 },
-    { "id": "C1", "type": "junction", "label": "West Junction", "label_bn": "পশ্চিম সংযোগস্থল", "x": 250, "y": 120 },
-    { "id": "C2", "type": "junction", "label": "North Junction", "label_bn": "উত্তর সংযোগস্থল", "x": 500, "y": 120 },
-    { "id": "C3", "type": "junction", "label": "South-West Junction", "label_bn": "দক্ষিণ-পশ্চিম সংযোগস্থল", "x": 250, "y": 330 },
-    { "id": "C4", "type": "junction", "label": "South Junction", "label_bn": "দক্ষিণ সংযোগস্থল", "x": 500, "y": 330 },
-    { "id": "E1", "type": "exit", "label": "North-East Exit", "label_bn": "উত্তর-পূর্ব বহির্গমন", "x": 760, "y": 120 },
-    { "id": "E2", "type": "exit", "label": "South-East Exit", "label_bn": "দক্ষিণ-পূর্ব বহির্গমন", "x": 760, "y": 330 },
-    { "id": "E3", "type": "exit", "label": "West Stair Exit", "label_bn": "পশ্চিম সিঁড়ি বহির্গমন", "x": 250, "y": 500 }
+    {
+      "id": "R1",
+      "label": "Room 101",
+      "type": "room",
+      "x": 60,
+      "y": 65
+    },
+    {
+      "id": "R2",
+      "label": "Room 102",
+      "type": "room",
+      "x": 60,
+      "y": 185
+    },
+    {
+      "id": "C1",
+      "label": "Junction A",
+      "type": "junction",
+      "x": 190,
+      "y": 65
+    },
+    {
+      "id": "C2",
+      "label": "Junction B",
+      "type": "junction",
+      "x": 325,
+      "y": 65
+    },
+    {
+      "id": "C3",
+      "label": "Junction C",
+      "type": "junction",
+      "x": 190,
+      "y": 185
+    },
+    {
+      "id": "C4",
+      "label": "Junction D",
+      "type": "junction",
+      "x": 325,
+      "y": 185
+    },
+    {
+      "id": "E1",
+      "label": "North Exit",
+      "type": "exit",
+      "x": 445,
+      "y": 65
+    },
+    {
+      "id": "E2",
+      "label": "South Exit",
+      "type": "exit",
+      "x": 445,
+      "y": 185
+    }
   ],
   "edges": [
-    { "id": "R1-C1", "from": "R1", "to": "C1", "weight": 2 },
-    { "id": "C1-C2", "from": "C1", "to": "C2", "weight": 3 },
-    { "id": "C2-E1", "from": "C2", "to": "E1", "weight": 2 },
-    { "id": "C1-C3", "from": "C1", "to": "C3", "weight": 3 },
-    { "id": "C3-C4", "from": "C3", "to": "C4", "weight": 3 },
-    { "id": "C4-E2", "from": "C4", "to": "E2", "weight": 3 },
-    { "id": "C2-C4", "from": "C2", "to": "C4", "weight": 4 },
-    { "id": "R2-C2", "from": "R2", "to": "C2", "weight": 2 },
-    { "id": "R3-C3", "from": "R3", "to": "C3", "weight": 2 },
-    { "id": "R4-C4", "from": "R4", "to": "C4", "weight": 2 },
-    { "id": "C3-E3", "from": "C3", "to": "E3", "weight": 9 }
+    {
+      "id": "L01",
+      "from": "R1",
+      "to": "C1",
+      "cost": 2
+    },
+    {
+      "id": "L02",
+      "from": "C1",
+      "to": "C2",
+      "cost": 3
+    },
+    {
+      "id": "L03",
+      "from": "C2",
+      "to": "E1",
+      "cost": 2
+    },
+    {
+      "id": "L04",
+      "from": "R1",
+      "to": "R2",
+      "cost": 4
+    },
+    {
+      "id": "L05",
+      "from": "R2",
+      "to": "C3",
+      "cost": 2
+    },
+    {
+      "id": "L06",
+      "from": "C3",
+      "to": "C4",
+      "cost": 3
+    },
+    {
+      "id": "L07",
+      "from": "C4",
+      "to": "E2",
+      "cost": 2
+    },
+    {
+      "id": "L08",
+      "from": "C1",
+      "to": "C3",
+      "cost": 4
+    },
+    {
+      "id": "L09",
+      "from": "C2",
+      "to": "C4",
+      "cost": 3
+    }
   ],
   "initial_state": {
-    "start": "R1",
     "blocked_nodes": [],
     "blocked_edges": [],
     "closed_exits": []

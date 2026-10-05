@@ -81,15 +81,17 @@
       els.empty.hidden = true;
       els.reset.disabled = false;
       els.start.disabled = false;
+      state.start = null;
       applyInitialState();
     } else {
       renderMessage();
     }
   }
 
+  // Restore the file's initial_state hazards. The start is the user's choice,
+  // so it is kept (and reported as blocked if initial_state blocks it).
   function applyInitialState() {
     const init = state.building.initialState;
-    state.start = init.start;
     state.blockedNodes = new Set(init.blockedNodes);
     state.blockedEdges = new Set(init.blockedEdges);
     state.closedExits = new Set(init.closedExits);

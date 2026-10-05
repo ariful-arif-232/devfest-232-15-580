@@ -4,10 +4,13 @@
  * Routes are always computed from the imported building and the live hazard
  * state; nothing about the sample building is hard-coded here.
  *
- * Determinism: when two routes have the same total cost, the one whose node-id
- * sequence is lexicographically smaller wins (compared id by id, by plain
- * string order). This applies both inside Dijkstra and when choosing between
- * exits, so the same input always yields the same route.
+ * Exact routing rule (deterministic):
+ *   1. minimum total cost (sum of edge costs);
+ *   2. on equal cost, the lexicographically smallest exit ID;
+ *   3. if paths to that exit also tie, the lexicographically smallest sequence
+ *      of node IDs (compared ID by ID, plain string order).
+ * Blocked nodes (and so their corridors), blocked edges and closed exits are
+ * excluded entirely, including as intermediate nodes.
  */
 (function (root, factory) {
   const api = factory();
@@ -114,11 +117,13 @@
       }
     }
 
+    // Each node's path is already the smallest node-ID sequence among its
+    // cheapest paths; choose the exit by cost, then by exit ID.
     let best = null;
     building.nodes.forEach((n) => {
       if (n.type !== 'exit' || !dist.has(n.id)) return;
       const d = dist.get(n.id);
-      if (best === null || better(d, path.get(n.id), best.cost, best.path)) {
+      if (best === null || d < best.cost - EPS || (Math.abs(d - best.cost) <= EPS && n.id < best.exit)) {
         best = { cost: d, path: path.get(n.id), exit: n.id };
       }
     });
