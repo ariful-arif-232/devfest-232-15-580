@@ -4,44 +4,84 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Smart Escape</title>
+  <meta name="description" content="Frontend-only emergency evacuation route finder with live hazard rerouting.">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Smart Escape</h1>
-  <p><input type="file" id="file" accept=".json,application/json"> <button id="sample" type="button">Load sample building.json</button></p>
-  <pre id="out">Import a building JSON file.</pre>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="7"/><path d="M11 22l5-12 5 12M13 18h6"/></svg>
+      <div>
+        <h1 data-i18n="app.title">Smart Escape</h1>
+        <p class="tagline" id="building-name" data-i18n="app.tagline">Emergency evacuation route finder</p>
+      </div>
+    </div>
+    <div class="actions">
+      <label class="btn">
+        <input type="file" id="file-input" accept=".json,application/json" hidden>
+        <span data-i18n="btn.import">Import JSON</span>
+      </label>
+      <button type="button" class="btn" id="btn-sample" data-i18n="btn.sample">Load sample</button>
+      <button type="button" class="btn btn-quiet" id="btn-reset" data-i18n="btn.reset" disabled>Reset</button>
+    </div>
+  </header>
+
+  <div id="import-message" class="import-message" role="status" aria-live="polite" hidden></div>
+
+  <main class="layout">
+    <section class="map-panel" id="map-panel" aria-label="Building map">
+      <div class="map-empty" id="map-empty">
+        <h2 data-i18n="empty.title">No building loaded</h2>
+        <p data-i18n="empty.body">Import a building JSON file (or load the sample) to see the map and the safest route.</p>
+      </div>
+      <svg id="map" class="map" role="group" aria-label="Building map" hidden></svg>
+      <div class="drop-hint" id="drop-hint" data-i18n="drop.hint" hidden>Drop a building JSON file here</div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="card route-card" id="route-card" aria-live="polite">
+        <h2 data-i18n="route.heading">Escape route</h2>
+        <div id="route-body"></div>
+      </section>
+
+      <section class="card">
+        <h2><label for="start-select" data-i18n="start.heading">Starting location</label></h2>
+        <select id="start-select" disabled></select>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="sel.heading">Selected</h2>
+        <div id="inspector"></div>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="exits.heading">Exits</h2>
+        <ul class="exit-list" id="exit-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="haz.heading">Hazards</h2>
+        <ul class="hazard-list" id="hazard-list"></ul>
+      </section>
+
+      <section class="card legend">
+        <h2 data-i18n="legend.heading">Legend</h2>
+        <ul>
+          <li><span class="sw sw-route"></span><span data-i18n="legend.route">Escape route</span></li>
+          <li><span class="sw sw-start"></span><span data-i18n="legend.start">Your location</span></li>
+          <li><span class="sw sw-blocked"></span><span data-i18n="legend.blocked">Blocked</span></li>
+          <li><span class="sw sw-closed"></span><span data-i18n="legend.closed">Closed exit</span></li>
+        </ul>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer" data-i18n="footer">Runs entirely in your browser. No data leaves this page.</footer>
 
   <script src="src/validate.js"></script>
   <script src="src/graph.js"></script>
-  <script>
-    (function () {
-      const SE = window.SmartEscape;
-      const out = document.getElementById('out');
-
-      function show(text) {
-        const result = SE.parseBuildingJSON(text);
-        if (!result.ok) {
-          out.textContent = 'Invalid building file:\n- ' + result.errors.map((e) => e.message).join('\n- ');
-          return;
-        }
-        const b = result.building;
-        const r = SE.findEscapeRoute(b, b.initialState);
-        const lines = [
-          'Loaded ' + b.nodes.length + ' locations and ' + b.edges.length + ' corridors.',
-          ...result.warnings.map((w) => 'Warning: ' + w.message),
-          r.status === 'OK' ? 'Route: ' + r.path.join(' -> ') + ' (cost ' + r.cost + ')' : 'Status: ' + r.status
-        ];
-        out.textContent = lines.join('\n');
-      }
-
-      document.getElementById('file').addEventListener('change', (ev) => {
-        const f = ev.target.files[0];
-        if (f) f.text().then(show);
-      });
-      document.getElementById('sample').addEventListener('click', () => {
-        fetch('building.json').then((r) => r.text()).then(show)
-          .catch(() => { out.textContent = 'Could not fetch building.json; use the file picker instead.'; });
-      });
-    })();
-  </script>
+  <script src="src/i18n.js"></script>
+  <script src="src/map.js"></script>
+  <script src="src/app.js"></script>
 </body>
 </html>
