@@ -146,7 +146,21 @@
 
   // ---- rendering ----------------------------------------------------------
 
+  // Sidebar controls are rebuilt on every render; keep keyboard focus on the
+  // equivalent control (or its panel) so keyboard users are not sent to <body>.
   function render() {
+    const active = document.activeElement;
+    const focusKey = active && active.getAttribute ? active.getAttribute('data-focus') : null;
+    const scope = focusKey ? active.closest('[data-focus-scope]') : null;
+    renderAll();
+    if (!focusKey || document.activeElement !== document.body) return;
+    const same = document.querySelector('[data-focus="' + CSS.escape(focusKey) + '"]');
+    const next = same && !same.disabled ? same
+      : scope && (scope.querySelector('button:not(:disabled)') || scope);
+    if (next) next.focus();
+  }
+
+  function renderAll() {
     renderLang();
     renderMessage();
     renderTitle();
@@ -310,11 +324,11 @@
       const actions = [];
       if (n.type === 'exit') {
         const closed = state.closedExits.has(n.id);
-        actions.push(h('button', { type: 'button', class: closed ? 'btn' : 'btn btn-danger', text: t(closed ? 'sel.reopenExit' : 'sel.closeExit'), onclick: () => toggleNode(n.id) }));
+        actions.push(h('button', { type: 'button', class: closed ? 'btn' : 'btn btn-danger', text: t(closed ? 'sel.reopenExit' : 'sel.closeExit'), 'data-focus': 'sel-toggle', onclick: () => toggleNode(n.id) }));
       } else {
         const blocked = state.blockedNodes.has(n.id);
-        actions.push(h('button', { type: 'button', class: 'btn btn-primary', text: t('sel.setStart'), disabled: blocked || n.id === state.start, onclick: () => setStart(n.id) }));
-        actions.push(h('button', { type: 'button', class: blocked ? 'btn' : 'btn btn-danger', text: t(blocked ? 'sel.unblock' : 'sel.block'), onclick: () => toggleNode(n.id) }));
+        actions.push(h('button', { type: 'button', class: 'btn btn-primary', text: t('sel.setStart'), disabled: blocked || n.id === state.start, 'data-focus': 'sel-start', onclick: () => setStart(n.id) }));
+        actions.push(h('button', { type: 'button', class: blocked ? 'btn' : 'btn btn-danger', text: t(blocked ? 'sel.unblock' : 'sel.block'), 'data-focus': 'sel-toggle', onclick: () => toggleNode(n.id) }));
       }
       box.appendChild(h('p', { class: 'sel-title' }, [
         h('span', { class: 'tag tag-' + n.type, text: t('type.' + n.type) }), ' ', h('strong', { text: nodeTitle(n.id) })
@@ -330,7 +344,7 @@
       h('span', { class: 'muted', text: t('sel.weight', { w: e.weight }) })
     ]));
     box.appendChild(h('div', { class: 'btn-row' }, [
-      h('button', { type: 'button', class: blocked ? 'btn' : 'btn btn-danger', text: t(blocked ? 'sel.unblockEdge' : 'sel.blockEdge'), onclick: () => toggleEdge(e.key) })
+      h('button', { type: 'button', class: blocked ? 'btn' : 'btn btn-danger', text: t(blocked ? 'sel.unblockEdge' : 'sel.blockEdge'), 'data-focus': 'sel-toggle', onclick: () => toggleEdge(e.key) })
     ]));
   }
 
@@ -341,7 +355,7 @@
       els.exits.appendChild(h('li', { class: closed ? 'is-closed' : '' }, [
         h('span', { class: 'exit-name', text: nodeTitle(n.id) }),
         h('span', { class: 'pill ' + (closed ? 'pill-closed' : 'pill-open'), text: t(closed ? 'state.closed' : 'state.open') }),
-        h('button', { type: 'button', class: 'btn btn-small', text: t(closed ? 'sel.reopenExit' : 'sel.closeExit'), onclick: () => toggleNode(n.id) })
+        h('button', { type: 'button', class: 'btn btn-small', text: t(closed ? 'sel.reopenExit' : 'sel.closeExit'), 'data-focus': 'exit:' + n.id, onclick: () => toggleNode(n.id) })
       ]));
     });
   }
@@ -350,23 +364,23 @@
     clear(els.hazards);
     const items = [];
     Array.from(state.blockedNodes).sort().forEach((id) => {
-      items.push([t('haz.blockedNode', { name: nodeTitle(id) }), () => toggleNode(id)]);
+      items.push([t('haz.blockedNode', { name: nodeTitle(id) }), () => toggleNode(id), 'haz:node:' + id]);
     });
     Array.from(state.blockedEdges).sort().forEach((key) => {
       const e = state.building.edgeByKey.get(key);
-      items.push([t('haz.blockedEdge', { a: e.a, b: e.b }), () => toggleEdge(key)]);
+      items.push([t('haz.blockedEdge', { a: e.a, b: e.b }), () => toggleEdge(key), 'haz:edge:' + key]);
     });
     Array.from(state.closedExits).sort().forEach((id) => {
-      items.push([t('haz.closedExit', { name: nodeTitle(id) }), () => toggleNode(id)]);
+      items.push([t('haz.closedExit', { name: nodeTitle(id) }), () => toggleNode(id), 'haz:exit:' + id]);
     });
     if (!items.length) {
       els.hazards.appendChild(h('li', { class: 'muted', text: t('haz.none') }));
       return;
     }
-    items.forEach(([label, undo]) => {
+    items.forEach(([label, undo, focusKey]) => {
       els.hazards.appendChild(h('li', null, [
         h('span', { text: label }),
-        h('button', { type: 'button', class: 'btn btn-small', text: t('haz.clear'), onclick: undo })
+        h('button', { type: 'button', class: 'btn btn-small', text: t('haz.clear'), 'data-focus': focusKey, onclick: undo })
       ]));
     });
   }

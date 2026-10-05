@@ -127,6 +127,9 @@ html[lang="bn"] h2 { text-transform: none; letter-spacing: 0; font-size: 0.9rem;
 }
 
 .sidebar { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* Long dataset labels and IDs must wrap instead of overflowing cards. */
+.sidebar, .import-message, .tagline { overflow-wrap: anywhere; }
+[data-focus-scope]:focus { outline: none; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
 
 select {

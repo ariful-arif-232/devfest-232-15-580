@@ -10,6 +10,7 @@
   'use strict';
   const SE = (root.SmartEscape = root.SmartEscape || {});
   const NS = 'http://www.w3.org/2000/svg';
+  const MAX_LABEL = 18;
 
   function el(name, attrs, parent) {
     const node = document.createElementNS(NS, name);
@@ -78,7 +79,8 @@
       g.addEventListener('keydown', (ev) => {
         if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); handlers.onNode(n.id); }
       });
-      nodeEls.set(n.id, { g, label });
+      const title = el('title', null, g);
+      nodeEls.set(n.id, { g, label, title });
     });
 
     let routeSig = null;
@@ -92,14 +94,18 @@
       const routeEdges = new Set(view.route && view.route.status === 'OK' ? view.route.edges : []);
 
       building.nodes.forEach((n) => {
-        const { g, label } = nodeEls.get(n.id);
+        const { g, label, title } = nodeEls.get(n.id);
         g.classList.toggle('is-start', n.id === view.start);
         g.classList.toggle('is-blocked', view.blockedNodes.has(n.id));
         g.classList.toggle('is-closed', n.type === 'exit' && view.closedExits.has(n.id));
         g.classList.toggle('on-route', onRoute.has(n.id));
         g.classList.toggle('is-target', view.route && view.route.status === 'OK' && view.route.exit === n.id);
         g.classList.toggle('is-selected', !!view.selected && view.selected.kind === 'node' && view.selected.id === n.id);
-        label.textContent = view.nodeName(n);
+        // Shorten long dataset labels on the map; the full text stays in the
+        // tooltip, the accessible name and the side panel.
+        const name = view.nodeName(n);
+        label.textContent = name.length > MAX_LABEL ? name.slice(0, MAX_LABEL - 1) + '…' : name;
+        title.textContent = n.id + ' · ' + name;
         g.setAttribute('aria-label', view.nodeAria(n));
       });
 

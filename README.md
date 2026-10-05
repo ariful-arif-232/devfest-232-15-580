@@ -119,7 +119,8 @@ I didn't attempt the optional extensions: alternative routes, high-contrast mode
 ## Known issues
 
 - **Load sample** only works when the folder is served over HTTP(S). **Import JSON** always works.
-- Labels can overlap on datasets whose nodes are placed very close together, because the map always uses the supplied coordinates as given.
+- Labels can overlap on datasets whose nodes are placed very close together, because the map always uses the supplied coordinates as given. Map labels longer than 18 characters are shortened with “…”. The full label appears in the tooltip, the screen-reader name and the side panel.
+- Equal-cost exits are compared in plain string order, so `E10` comes before `E2`.
 
 ## AI tools and most useful prompt
 
