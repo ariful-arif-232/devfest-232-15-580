@@ -8,10 +8,33 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-import" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5"/></symbol>
+    <symbol id="i-sample" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4v4.5H9"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8 18h5a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.3 12 21 12 21z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+    <symbol id="i-exit" viewBox="0 0 24 24"><path d="M13 4H6v16h7M10 12h10M16.5 8.5 20 12l-3.5 3.5"/></symbol>
+    <symbol id="i-hazard" viewBox="0 0 24 24"><path d="M12 4 21 20H3z"/><path d="M12 10v4.5M12 17.2v.1"/></symbol>
+    <symbol id="i-legend" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/></symbol>
+  </svg>
+
   <header class="topbar">
     <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="7"/><path d="M11 22l5-12 5 12M13 18h6"/></svg>
-      <div>
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="brand-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#12b981"/>
+            <stop offset="1" stop-color="#0a7a55"/>
+          </linearGradient>
+        </defs>
+        <rect class="brand-tile" x="1" y="1" width="38" height="38" rx="11" fill="url(#brand-bg)"/>
+        <path class="brand-door" d="M10 9.5h10.5v21H10z"/>
+        <path class="brand-route" d="M6.5 25.5h3.5"/>
+        <path class="brand-arrow" d="M15 20h17M27 15l5 5-5 5"/>
+      </svg>
+      <div class="brand-text">
         <h1 data-i18n="app.title">Smart Escape</h1>
         <p class="tagline" id="building-name" data-i18n="app.tagline">Emergency evacuation route finder</p>
       </div>
@@ -21,12 +44,13 @@
         <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
         <button type="button" class="lang-btn" data-lang="bn" aria-pressed="false" lang="bn">বাংলা</button>
       </div>
-      <label class="btn">
+      <label class="btn btn-solid">
         <input type="file" id="file-input" accept=".json,application/json" hidden>
+        <svg class="icon" aria-hidden="true"><use href="#i-import"/></svg>
         <span data-i18n="btn.import">Import JSON</span>
       </label>
-      <button type="button" class="btn" id="btn-sample" data-i18n="btn.sample">Load sample</button>
-      <button type="button" class="btn btn-quiet" id="btn-reset" data-i18n="btn.reset" disabled>Reset</button>
+      <button type="button" class="btn" id="btn-sample"><svg class="icon" aria-hidden="true"><use href="#i-sample"/></svg><span data-i18n="btn.sample">Load sample</span></button>
+      <button type="button" class="btn btn-quiet" id="btn-reset" disabled><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg><span data-i18n="btn.reset">Reset</span></button>
     </div>
   </header>
 
@@ -35,6 +59,7 @@
   <main class="layout">
     <section class="map-panel" id="map-panel" aria-label="Building map">
       <div class="map-empty" id="map-empty">
+        <svg class="empty-icon" aria-hidden="true"><use href="#i-exit"/></svg>
         <h2 data-i18n="empty.title">No building loaded</h2>
         <p data-i18n="empty.body">Import a building JSON file (or load the sample) to see the map and the safest route.</p>
       </div>
@@ -45,32 +70,32 @@
 
     <aside class="sidebar">
       <section class="card route-card" id="route-card" aria-live="polite">
-        <h2 data-i18n="route.heading">Escape route</h2>
+        <h2 class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-route"/></svg><span data-i18n="route.heading">Escape route</span></h2>
         <div id="route-body"></div>
       </section>
 
       <section class="card">
-        <h2><label for="start-select" data-i18n="start.heading">Starting location</label></h2>
+        <h2 class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><label for="start-select" data-i18n="start.heading">Starting location</label></h2>
         <select id="start-select" disabled></select>
       </section>
 
       <section class="card">
-        <h2 data-i18n="sel.heading">Selected</h2>
+        <h2 class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg><span data-i18n="sel.heading">Selected</span></h2>
         <div id="inspector" data-focus-scope tabindex="-1"></div>
       </section>
 
       <section class="card">
-        <h2 data-i18n="exits.heading">Exits</h2>
+        <h2 class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-exit"/></svg><span data-i18n="exits.heading">Exits</span></h2>
         <ul class="exit-list" id="exit-list" data-focus-scope tabindex="-1"></ul>
       </section>
 
       <section class="card">
-        <h2 data-i18n="haz.heading">Hazards</h2>
+        <h2 class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-hazard"/></svg><span data-i18n="haz.heading">Hazards</span></h2>
         <ul class="hazard-list" id="hazard-list" data-focus-scope tabindex="-1"></ul>
       </section>
 
       <section class="card legend">
-        <h2 data-i18n="legend.heading">Legend</h2>
+        <h2 class="card-title"><svg class="icon" aria-hidden="true"><use href="#i-legend"/></svg><span data-i18n="legend.heading">Legend</span></h2>
         <ul>
           <li><span class="sw sw-route"></span><span data-i18n="legend.route">Escape route</span></li>
           <li><span class="sw sw-start"></span><span data-i18n="legend.start">Your location</span></li>
