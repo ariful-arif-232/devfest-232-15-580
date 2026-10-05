@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Escape</title>
+</head>
+<body>
+  <h1>Smart Escape</h1>
+  <p><input type="file" id="file" accept=".json,application/json"> <button id="sample" type="button">Load sample building.json</button></p>
+  <pre id="out">Import a building JSON file.</pre>
+
+  <script src="src/validate.js"></script>
+  <script src="src/graph.js"></script>
+  <script>
+    (function () {
+      const SE = window.SmartEscape;
+      const out = document.getElementById('out');
+
+      function show(text) {
+        const result = SE.parseBuildingJSON(text);
+        if (!result.ok) {
+          out.textContent = 'Invalid building file:\n- ' + result.errors.map((e) => e.message).join('\n- ');
+          return;
+        }
+        const b = result.building;
+        const r = SE.findEscapeRoute(b, b.initialState);
+        const lines = [
+          'Loaded ' + b.nodes.length + ' locations and ' + b.edges.length + ' corridors.',
+          ...result.warnings.map((w) => 'Warning: ' + w.message),
+          r.status === 'OK' ? 'Route: ' + r.path.join(' -> ') + ' (cost ' + r.cost + ')' : 'Status: ' + r.status
+        ];
+        out.textContent = lines.join('\n');
+      }
+
+      document.getElementById('file').addEventListener('change', (ev) => {
+        const f = ev.target.files[0];
+        if (f) f.text().then(show);
+      });
+      document.getElementById('sample').addEventListener('click', () => {
+        fetch('building.json').then((r) => r.text()).then(show)
+          .catch(() => { out.textContent = 'Could not fetch building.json; use the file picker instead.'; });
+      });
+    })();
+  </script>
+</body>
+</html>
