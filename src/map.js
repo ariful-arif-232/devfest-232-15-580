@@ -34,7 +34,7 @@
     svg.setAttribute('viewBox', [minX - padX, minY - padY, maxX - minX + 2 * padX, maxY - minY + 2 * padY].join(' '));
     svg.style.setProperty('--u', u);
 
-    const R = 17 * u;
+    const R = 21 * u;
     const gEdges = el('g', { class: 'edges' }, svg);
     const gRoute = el('g', { class: 'route-layer' }, svg);
     const gNodes = el('g', { class: 'nodes' }, svg);
@@ -44,7 +44,7 @@
       const a = building.nodeById.get(e.a);
       const b = building.nodeById.get(e.b);
       const g = el('g', { class: 'edge', 'data-key': e.key, tabindex: '0', role: 'button' }, gEdges);
-      el('line', { class: 'edge-line', x1: a.x, y1: a.y, x2: b.x, y2: b.y, 'stroke-width': 5 * u }, g);
+      el('line', { class: 'edge-line', x1: a.x, y1: a.y, x2: b.x, y2: b.y, 'stroke-width': 6 * u }, g);
       el('line', { class: 'edge-hit', x1: a.x, y1: a.y, x2: b.x, y2: b.y, 'stroke-width': 22 * u }, g);
       const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
       const cross = el('g', { class: 'edge-cross', transform: `translate(${mx} ${my})` }, g);
@@ -55,7 +55,7 @@
       let nx = -(b.y - a.y) / len, ny = (b.x - a.x) / len;
       if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny; }
       if (Math.abs(ny) < 0.3) { nx = Math.abs(nx); }
-      const w = el('text', { class: 'edge-weight', x: mx + nx * 14 * u, y: my + ny * 14 * u, 'font-size': 13 * u, 'stroke-width': 4 * u, 'dominant-baseline': 'central' }, g);
+      const w = el('text', { class: 'edge-weight', x: mx + nx * 18 * u, y: my + ny * 18 * u, 'font-size': 15 * u, 'stroke-width': 5 * u, 'dominant-baseline': 'central' }, g);
       w.textContent = String(e.weight);
       g.addEventListener('click', () => handlers.onEdge(e.key));
       g.addEventListener('keydown', (ev) => {
@@ -67,14 +67,13 @@
     const nodeEls = new Map();
     building.nodes.forEach((n) => {
       const g = el('g', { class: `node node-${n.type}`, 'data-id': n.id, tabindex: '0', role: 'button', transform: `translate(${n.x} ${n.y})` }, gNodes);
-      el('circle', { class: 'node-halo', r: R * 1.75 }, g);
-      if (n.type === 'room') el('rect', { class: 'node-shape', x: -R * 1.15, y: -R * 0.85, width: R * 2.3, height: R * 1.7, rx: 4 * u, 'stroke-width': 2.5 * u }, g);
-      else if (n.type === 'exit') el('rect', { class: 'node-shape', x: -R, y: -R, width: R * 2, height: R * 2, rx: R * 0.35, 'stroke-width': 2.5 * u }, g);
-      else el('circle', { class: 'node-shape', r: R * 0.85, 'stroke-width': 2.5 * u }, g);
-      const id = el('text', { class: 'node-id', y: 0, 'font-size': 12 * u }, g);
+      el('circle', { class: 'node-halo', r: R * 1.55 }, g);
+      if (n.type === 'room' || n.type === 'exit') el('rect', { class: 'node-shape', x: -R * 1.15, y: -R * 0.85, width: R * 2.3, height: R * 1.7, rx: 5 * u, 'stroke-width': 3.2 * u }, g);
+      else el('circle', { class: 'node-shape', r: R * 0.9, 'stroke-width': 3.2 * u }, g);
+      const id = el('text', { class: 'node-id', y: 0, 'font-size': 15 * u }, g);
       id.textContent = n.id;
-      const label = el('text', { class: 'node-label', y: R + 15 * u, 'font-size': 11.5 * u, 'stroke-width': 4 * u }, g);
-      el('path', { class: 'node-x', d: `M${-R * 0.9} ${-R * 0.9}L${R * 0.9} ${R * 0.9}M${R * 0.9} ${-R * 0.9}L${-R * 0.9} ${R * 0.9}`, 'stroke-width': 3 * u }, g);
+      const label = el('text', { class: 'node-label', y: R + 20 * u, 'font-size': 13 * u, 'stroke-width': 5 * u }, g);
+      el('path', { class: 'node-x', d: `M${-R * 0.5} ${-R * 0.5}L${R * 0.5} ${R * 0.5}M${R * 0.5} ${-R * 0.5}L${-R * 0.5} ${R * 0.5}`, 'stroke-width': 3.8 * u }, g);
       g.addEventListener('click', () => handlers.onNode(n.id));
       g.addEventListener('keydown', (ev) => {
         if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); handlers.onNode(n.id); }
